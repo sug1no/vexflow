@@ -45,11 +45,6 @@ export class GraceNote extends StaveNote {
 
   getCategory() { return GraceNote.CATEGORY; }
 
-  // FIXME: move this to more basic class.
-  getStaveNoteGlyphScale() {
-    return this.render_options.glyph_font_scale / Flow.DEFAULT_NOTATION_FONT_SCALE;
-  }
-
   getNoteGlyphLengthScale() {
     return this.getStaveNoteGlyphScale() / GraceNote.SCALE;
   }
@@ -67,7 +62,7 @@ export class GraceNote extends StaveNote {
 
       // some magic numbers are based on the scale = GraceNote.SCALE.
       const offsetScale = this.getLengthScale();
-      const noteGlyphScale = this.getNoteGlyphLengthScale();
+      const noteGlyphLengthScale = this.getNoteGlyphLengthScale();
       let slashBBox = undefined;
       const beam = this.beam;
       if (beam) {
@@ -112,12 +107,12 @@ export class GraceNote extends StaveNote {
           y2: 9,
         };
 
-        x += (offsets.x1 * noteGlyphScale);
+        x += (offsets.x1 * noteGlyphLengthScale);
         y += (offsets.y1 * offsetScale);
         slashBBox = {
           x1: x,
           y1: y,
-          x2: x + (offsets.x2 * noteGlyphScale),
+          x2: x + (offsets.x2 * noteGlyphLengthScale),
           y2: y + (offsets.y2 * offsetScale),
         };
       }

@@ -734,6 +734,10 @@ export class StaveNote extends StemmableNote {
     this.stem.setStyle(style);
   }
 
+  getStaveNoteGlyphScale() {
+    return this.render_options.glyph_font_scale / Flow.DEFAULT_NOTATION_FONT_SCALE;
+  }
+
   getScale() {
     return this.render_options.scale;
   }
