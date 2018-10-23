@@ -331,6 +331,7 @@ export class StaveNote extends StemmableNote {
     Vex.Merge(this.render_options, {
       // font size for note heads and rests
       glyph_font_scale: noteStruct.glyph_font_scale || Flow.DEFAULT_NOTATION_FONT_SCALE,
+      scale: noteStruct.scale || 1,
       // number of stroke px to the left and right of head
       stroke_px: noteStruct.stroke_px || StaveNote.DEFAULT_LEDGER_LINE_OFFSET,
     });
@@ -731,6 +732,10 @@ export class StaveNote extends StemmableNote {
     super.setStyle(style);
     this.note_heads.forEach(notehead => notehead.setStyle(style));
     this.stem.setStyle(style);
+  }
+
+  getScale() {
+    return this.render_options.scale;
   }
 
   setStemStyle(style) {

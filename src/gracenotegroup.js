@@ -122,8 +122,10 @@ export class GraceNoteGroup extends Modifier {
     if (grace_notes.length > 1) {
       const beam = new Beam(grace_notes);
 
-      beam.render_options.beam_width = 3;
-      beam.render_options.partial_beam_length = 4;
+      const noteGlyphLengthScale = grace_notes[0].getNoteGlyphLengthScale ?
+        grace_notes[0].getNoteGlyphLengthScale() : 1;
+      beam.render_options.beam_width = 3 * noteGlyphLengthScale;
+      beam.render_options.partial_beam_length = 4 * noteGlyphLengthScale;
 
       this.beams.push(beam);
     }

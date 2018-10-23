@@ -11,7 +11,9 @@ export class GraceNote extends StaveNote {
 
   constructor(note_struct) {
     super(Object.assign(note_struct, {
-      glyph_font_scale: Flow.DEFAULT_NOTATION_FONT_SCALE * GraceNote.SCALE,
+      glyph_font_scale: note_struct.glyph_font_scale ||
+        (Flow.DEFAULT_NOTATION_FONT_SCALE * (note_struct.scale || GraceNote.SCALE)),
+      scale: (note_struct.scale || GraceNote.SCALE),
       stroke_px: GraceNote.LEDGER_LINE_OFFSET,
     }));
     this.setAttribute('type', 'GraceNote');
@@ -21,7 +23,7 @@ export class GraceNote extends StaveNote {
 
     this.buildNoteHeads();
 
-    this.width = 3;
+    this.width = 3 * this.getNoteGlyphLengthScale();
   }
 
   getStemExtension() {
@@ -33,8 +35,7 @@ export class GraceNote extends StaveNote {
     if (glyph) {
       let ret = super.getStemExtension();
       if (glyph.stem) {
-        const staveNoteScale = this.getStaveNoteScale();
-        ret = ((Stem.HEIGHT + ret) * staveNoteScale) - Stem.HEIGHT;
+        ret = ((Stem.HEIGHT + ret) * this.getScale()) - Stem.HEIGHT;
       }
       return ret;
     }
@@ -44,9 +45,17 @@ export class GraceNote extends StaveNote {
 
   getCategory() { return GraceNote.CATEGORY; }
 
-  // FIXME: move this to more basic calss.
-  getStaveNoteScale() {
+  // FIXME: move this to more basic class.
+  getStaveNoteGlyphScale() {
     return this.render_options.glyph_font_scale / Flow.DEFAULT_NOTATION_FONT_SCALE;
+  }
+
+  getNoteGlyphLengthScale() {
+    return this.getStaveNoteGlyphScale() / GraceNote.SCALE;
+  }
+
+  getLengthScale() {
+    return this.getScale() / GraceNote.SCALE;
   }
 
   draw() {
@@ -54,10 +63,11 @@ export class GraceNote extends StaveNote {
     this.setRendered();
     const stem = this.stem;
     if (this.slash && stem) {
-      const staveNoteScale = this.getStaveNoteScale();
+      const scale = this.getScale();
 
-      // some magic numbers are based on the staveNoteScale 0.66.
-      const offsetScale = staveNoteScale / 0.66;
+      // some magic numbers are based on the scale = GraceNote.SCALE.
+      const offsetScale = this.getLengthScale();
+      const noteGlyphScale = this.getNoteGlyphLengthScale();
       let slashBBox = undefined;
       const beam = this.beam;
       if (beam) {
@@ -88,7 +98,7 @@ export class GraceNote extends StaveNote {
         let defaultOffsetY = Flow.STEM_HEIGHT;
         defaultOffsetY -= (defaultOffsetY / 2.8);
         defaultOffsetY += defaultStemExtention;
-        y += ((defaultOffsetY * staveNoteScale) * stem_direction);
+        y += ((defaultOffsetY * scale) * stem_direction);
 
         const offsets = stem_direction === Flow.Stem.UP ? {
           x1: 1,
@@ -102,12 +112,12 @@ export class GraceNote extends StaveNote {
           y2: 9,
         };
 
-        x += (offsets.x1 * offsetScale);
+        x += (offsets.x1 * noteGlyphScale);
         y += (offsets.y1 * offsetScale);
         slashBBox = {
           x1: x,
           y1: y,
-          x2: x + (offsets.x2 * offsetScale),
+          x2: x + (offsets.x2 * noteGlyphScale),
           y2: y + (offsets.y2 * offsetScale),
         };
       }
